@@ -1,0 +1,135 @@
+import datetime
+from typing import Dict, Any, List
+
+class CalculadoraActuarial:
+    """
+    Motor base para el cálculo de primas y reglas configurables.
+    """
+
+    def __init__(self, reglas: List[Dict[str, Any]]):
+        """
+        Inicializa la calculadora con una lista de reglas de negocio/configuración.
+        """
+        self.reglas = reglas
+
+    def calcular_prima(self, entrada: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Ejecuta el cálculo de prima de acuerdo con las reglas y parámetros de entrada.
+        """
+        resultado = {"detalles": [], "prima": 0.0}
+
+        for regla in self.reglas:
+            if self._aplica_regla(regla, entrada):
+                res = self._evaluar_regla(regla, entrada)
+                resultado["detalles"].append(res)
+                resultado["prima"] += res.get("subtotal", 0.0)
+
+        return resultado
+
+    def _aplica_regla(self, regla: Dict[str, Any], entrada: Dict[str, Any]) -> bool:
+        """
+        Determina si una regla aplica según las restricciones.
+        """
+        restricciones = regla.get("restricciones", [])
+        for restriccion in restricciones:
+            # Ejemplo simple de restricción
+            if "Edad máxima" in restriccion:
+                edad_max = int(''.join(filter(str.isdigit, restriccion)))
+                if entrada.get("edad", 0) > edad_max:
+                    return False
+        return True
+
+    def _evaluar_regla(self, regla: Dict[str, Any], entrada: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Evalúa la fórmula de la regla usando los parámetros y datos de entrada.
+        """
+        # Extraer parámetros
+        tasa_base = regla["parametros"].get("tasa_base", 0.0)
+        suma_asegurada = entrada.get("suma_asegurada", 0.0)
+        factor_edad = self._mapear_factor(
+            entrada.get("edad", 0),
+            regla["parametros"].get("factor_edad", {})
+        )
+        factor_zona = regla["parametros"].get("factor_zona", {}).get(entrada.get("zona", "Otras"), 1.0)
+        recargos = 0.0
+        for key, val in regla["parametros"].get("recargos", {}).items():
+            if entrada.get(key, False):
+                recargos += val
+        descuentos = 0.0
+        for key, val in regla["parametros"].get("descuentos", {}).items():
+            if entrada.get(key, False):
+                descuentos += val
+
+        subtotal = suma_asegurada * tasa_base * factor_edad * factor_zona
+        subtotal += subtotal * recargos
+        subtotal -= subtotal * descuentos
+
+        return {
+            "regla_id": regla.get("regla_id"),
+            "descripcion": regla.get("nombre"),
+            "subtotal": round(subtotal, 2)
+        }
+
+    def _mapear_factor(self, edad: int, factores: Dict[str, float]) -> float:
+        """
+        Devuelve el factor correspondiente a la edad del asegurado.
+        """
+        for rango, factor in factores.items():
+            if "+" in rango:
+                lim = int(rango.replace("+", ""))
+                if edad >= lim:
+                    return factor
+            elif "-" in rango:
+                desde, hasta = map(int, rango.split("-"))
+                if desde <= edad <= hasta:
+                    return factor
+        return 1.0  # Valor por defecto
+
+# Ejemplo de uso:
+if __name__ == "__main__":
+    regla_demo = {
+        "regla_id": "AUTO-PRIMA-2025-01",
+        "nombre": "Cálculo de Prima Base – Autos Particular",
+        "parametros": {
+            "tasa_base": 0.025,
+            "factor_edad": {
+                "18-25": 1.15,
+                "26-40": 1.00,
+                "41-65": 1.10,
+                "66+": 1.30
+            },
+            "factor_zona": {
+                "CDMX": 1.20,
+                "GDL": 1.10,
+                "MTY": 1.15,
+                "Otras": 1.00
+            },
+            "recargos": {
+                "uso_comercial": 0.10,
+                "blindado": 0.20
+            },
+            "descuentos": {
+                "buen_conductor": 0.10,
+                "multianual": 0.05
+            }
+        },
+        "restricciones": [
+            "Suma asegurada mínima: $100,000",
+            "Edad máxima: 70 años",
+            "Solo aplica a vehículos particulares"
+        ]
+    }
+
+    entrada_demo = {
+        "suma_asegurada": 200000,
+        "edad": 30,
+        "zona": "CDMX",
+        "uso_comercial": False,
+        "blindado": False,
+        "buen_conductor": True,
+        "multianual": False
+    }
+
+    motor = CalculadoraActuarial([regla_demo])
+    resultado = motor.calcular_prima(entrada_demo)
+    print(resultado)
