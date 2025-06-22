@@ -1,0 +1,67 @@
+# Flujos Funcionales y Casos de Uso
+
+Este documento describe los principales flujos de usuario y casos de uso para el Motor Digital de Cálculo y Configuración Actuarial.
+
+---
+
+## 1. Flujos de usuario principales
+
+### 1.1. Alta y configuración de producto asegurador
+
+1. Usuario (actuario o producto) inicia sesión en la plataforma.
+2. Selecciona la aseguradora y negocio sobre el cual trabajará.
+3. Da de alta un nuevo producto o selecciona uno existente.
+4. Configura los planes/paquetes del producto.
+5. Define las coberturas de cada plan.
+6. Asocia reglas de negocio, tarifas, factores y condiciones a cada nivel.
+7. Guarda y versiona los cambios realizados.
+
+### 1.2. Versionado y publicación de reglas
+
+1. Usuario visualiza el historial de versiones de reglas/configuraciones.
+2. Compara diferencias entre versiones.
+3. Crea una nueva versión de una regla (edición o duplicado).
+4. Envía la nueva versión a revisión y aprobación (workflow de cambios).
+5. Publica la versión aprobada para ser utilizada en cálculos y cotizaciones.
+
+### 1.3. Simulación y matriz de pruebas
+
+1. Usuario accede al módulo de simulación.
+2. Selecciona producto/plan y configura parámetros de prueba (edad, suma asegurada, zona, descuentos, etc.).
+3. Ejecuta la simulación y visualiza la prima calculada, reglas aplicadas y desglose.
+4. Guarda el escenario en la matriz de pruebas para validación futura.
+5. Repite el proceso para múltiples escenarios, exporta resultados si es necesario.
+
+### 1.4. Exposición de API y consulta externa
+
+1. Un integrador solicita el endpoint de cotización de la API.
+2. Consulta la documentación y prueba en sandbox.
+3. Envía una solicitud con parámetros de cotización.
+4. Recibe la respuesta con el detalle de la prima, reglas aplicadas y trazabilidad del cálculo.
+5. Puede consultar catálogos, reglas vigentes y histórico de cotizaciones.
+
+---
+
+## 2. Casos de uso
+
+| ID   | Nombre                                   | Actor         | Descripción breve                                          |
+|------|------------------------------------------|---------------|------------------------------------------------------------|
+| CU01 | Crear producto asegurador                | Actuario      | Dar de alta un producto y su jerarquía de planes/coberturas|
+| CU02 | Configurar regla de negocio              | Actuario      | Definir fórmula, parámetros y restricciones de cálculo     |
+| CU03 | Versionar y aprobar configuración        | Usuario líder | Revisar, aprobar y publicar una nueva versión de regla     |
+| CU04 | Ejecutar simulación de cotización        | Actuario      | Probar escenarios y validar el cálculo de primas           |
+| CU05 | Consultar historial de versiones         | Todos         | Visualizar y comparar versiones de configuraciones         |
+| CU06 | Integrar canal externo vía API           | Integrador    | Consumir API para cotizar productos desde canal externo    |
+| CU07 | Auditar cambios y cálculos               | Auditor       | Revisar logs, trazabilidad y evidencia de cálculos         |
+
+---
+
+## 3. Notas y consideraciones
+
+- Todos los procesos quedan auditados con usuario, fecha, versión y detalles.
+- El sistema debe validar permisos y roles en cada flujo.
+- Los flujos pueden adaptarse o expandirse según nuevas necesidades del negocio.
+
+---
+
+_Última actualización: 2025-06-22_
