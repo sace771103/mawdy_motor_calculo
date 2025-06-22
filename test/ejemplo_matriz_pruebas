@@ -1,0 +1,67 @@
+# Ejemplo de Matriz de Pruebas de Cálculo
+
+Este archivo sirve para documentar escenarios de prueba, sus entradas, reglas aplicadas y resultados esperados. Así se valida el correcto funcionamiento del motor de cálculo y sus configuraciones.
+
+---
+
+## 1. Estructura sugerida de la matriz de pruebas
+
+| ID Caso | Producto      | Plan    | Suma Asegurada | Edad | Zona | Uso  | Descuentos    | Prima Esperada | Resultado | Notas                  |
+|---------|---------------|---------|----------------|------|------|------|---------------|---------------|-----------|------------------------|
+| TC01    | Auto Premium  | Oro     | $200,000       | 30   | CDMX | Privado | Buen conductor | $5,175        | OK        | Primera cotización     |
+| TC02    | Auto Premium  | Plata   | $150,000       | 22   | MTY  | Comercial | Ninguno        | $5,909        | OK        | Uso comercial aplica   |
+| TC03    | Auto Premium  | Oro     | $100,000       | 68   | GDL  | Privado | Multianual     | $4,157        | ERROR     | Edad fuera de rango    |
+
+---
+
+## 2. Ejemplo en formato YAML
+
+```yaml
+casos_prueba:
+  - id: TC01
+    producto: "Auto Premium"
+    plan: "Oro"
+    suma_asegurada: 200000
+    edad: 30
+    zona: "CDMX"
+    uso: "Privado"
+    descuentos: ["Buen conductor"]
+    prima_esperada: 5175
+    resultado: "OK"
+    notas: "Primera cotización válida"
+  - id: TC02
+    producto: "Auto Premium"
+    plan: "Plata"
+    suma_asegurada: 150000
+    edad: 22
+    zona: "MTY"
+    uso: "Comercial"
+    descuentos: []
+    prima_esperada: 5909
+    resultado: "OK"
+    notas: "Aplica recargo por uso comercial"
+  - id: TC03
+    producto: "Auto Premium"
+    plan: "Oro"
+    suma_asegurada: 100000
+    edad: 68
+    zona: "GDL"
+    uso: "Privado"
+    descuentos: ["Multianual"]
+    prima_esperada: 4157
+    resultado: "ERROR"
+    notas: "Edad fuera de rango permitido"
+```
+
+---
+
+## 3. Notas
+
+- Cada caso de prueba debe tener datos de entrada claros y un resultado esperado.
+- El resultado puede ser OK, ERROR o una validación especial.
+- Sirve para validar cambios, nuevas reglas o regresiones.
+- Esta matriz puede automatizarse en el futuro para pruebas masivas.
+
+---
+
+_Última actualización: 2025-06-22_
