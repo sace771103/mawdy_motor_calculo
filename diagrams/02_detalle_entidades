@@ -1,0 +1,123 @@
+# Detalle de Entidades y Campos – Modelo de Datos
+
+Este documento detalla los atributos sugeridos para cada entidad principal y sus relaciones, así como sugerencias de tipos de datos y consideraciones para la base de datos.
+
+---
+
+## 1. Entidades principales
+
+### 1.1. Aseguradora
+
+| Campo          | Tipo        | Descripción                        |
+|----------------|-------------|------------------------------------|
+| id             | UUID        | Identificador único                |
+| nombre         | VARCHAR(80) | Nombre comercial                   |
+| clave          | VARCHAR(10) | Clave interna/código               |
+| estatus        | BOOLEAN     | Activa/Inactiva                    |
+| fecha_alta     | DATE        | Fecha de alta                      |
+| usuario_admin  | VARCHAR(40) | Usuario responsable principal      |
+
+---
+
+### 1.2. Negocio
+
+| Campo        | Tipo        | Descripción                         |
+|--------------|-------------|-------------------------------------|
+| id           | UUID        | Identificador único                 |
+| aseguradora_id| UUID       | Relación a Aseguradora              |
+| nombre       | VARCHAR(80) | Nombre del ramo (autos, vida, etc.) |
+| clave        | VARCHAR(10) | Código interno                      |
+| tipo         | VARCHAR(20) | Tipo de producto/negocio            |
+| estatus      | BOOLEAN     | Activo/Inactivo                     |
+| fecha_alta   | DATE        | Fecha de alta                       |
+
+---
+
+### 1.3. Producto
+
+| Campo        | Tipo        | Descripción                         |
+|--------------|-------------|-------------------------------------|
+| id           | UUID        | Identificador único                 |
+| negocio_id   | UUID        | Relación a Negocio                  |
+| nombre       | VARCHAR(80) | Nombre comercial del producto       |
+| clave        | VARCHAR(20) | Código interno                      |
+| descripcion  | TEXT        | Descripción breve                   |
+| estatus      | BOOLEAN     | Activo/Inactivo                     |
+| version      | INT         | Versión                             |
+| fecha_alta   | DATE        | Fecha de alta                       |
+
+---
+
+### 1.4. Plan / Paquete
+
+| Campo        | Tipo        | Descripción                         |
+|--------------|-------------|-------------------------------------|
+| id           | UUID        | Identificador único                 |
+| producto_id  | UUID        | Relación a Producto                 |
+| nombre       | VARCHAR(80) | Nombre del plan (Oro, Plata, etc.)  |
+| clave        | VARCHAR(20) | Código interno                      |
+| descripcion  | TEXT        | Descripción breve                   |
+| estatus      | BOOLEAN     | Activo/Inactivo                     |
+| version      | INT         | Versión                             |
+
+---
+
+### 1.5. Cobertura
+
+| Campo           | Tipo        | Descripción                           |
+|-----------------|-------------|---------------------------------------|
+| id              | UUID        | Identificador único                   |
+| plan_id         | UUID        | Relación a Plan                       |
+| nombre          | VARCHAR(80) | Nombre de la cobertura                |
+| clave           | VARCHAR(20) | Código interno                        |
+| suma_asegurada  | DECIMAL     | Monto de cobertura                    |
+| deducible       | DECIMAL     | Deducible asociado                    |
+| estatus         | BOOLEAN     | Activo/Inactivo                       |
+
+---
+
+### 1.6. Regla / Configuración
+
+| Campo        | Tipo        | Descripción                               |
+|--------------|-------------|-------------------------------------------|
+| id           | UUID        | Identificador único                       |
+| entidad_id   | UUID        | Relación a Producto, Plan o Cobertura     |
+| tipo         | VARCHAR(30) | Tipo de regla (tarifa, comisión, etc.)    |
+| version      | INT         | Versión de la configuración               |
+| descripcion  | TEXT        | Descripción de la regla                   |
+| expresion    | TEXT        | Fórmula o lógica                          |
+| parametros   | JSONB       | Parámetros estructurados                  |
+| vigencia_ini | DATE        | Vigencia inicial                          |
+| vigencia_fin | DATE        | Vigencia final                            |
+| estatus      | BOOLEAN     | Activo/Inactivo                           |
+
+---
+
+## 2. Relaciones principales (resumidas)
+
+- Una **Aseguradora** tiene varios **Negocios**
+- Un **Negocio** tiene varios **Productos**
+- Un **Producto** tiene varios **Planes**
+- Un **Plan** tiene varias **Coberturas** y **Reglas**
+- Una **Regla** puede estar relacionada con Producto, Plan o Cobertura
+
+---
+
+## 3. Consideraciones
+
+- Usar UUIDs para llaves primarias y relaciones.
+- Versionar productos, planes y reglas para trazabilidad y rollback.
+- Campos JSONB permiten almacenar parámetros flexibles y evitar migraciones frecuentes.
+- Se pueden agregar tablas auxiliares: usuarios, roles/permisos, logs, catálogos, auditoría.
+
+---
+
+## 4. Pendientes o siguientes pasos
+
+- Detallar tablas auxiliares (usuarios, permisos, logs, catálogos, auditoría).
+- Crear diagrama visual (UML/ERD) y publicarlo como imagen o enlace.
+- Revisar con el área de negocio y TI para ajustes.
+
+---
+
+_Última actualización: 2025-06-22_
