@@ -1,0 +1,102 @@
+# Especificación Sugerida de API REST – Motor de Cálculo
+
+Este documento describe los endpoints principales que puede exponer el motor de cálculo actuarial para integración con otros sistemas.
+
+---
+
+## 1. Cotización de producto asegurador
+
+### Endpoint: `/api/v1/cotizar`
+
+- **Método:** POST
+- **Descripción:** Calcula la prima y desglose, dado un producto, plan y parámetros de entrada.
+- **Request (ejemplo JSON):**
+    ```json
+    {
+      "producto_id": "AUTO-PRIMA-2025-01",
+      "plan_id": "ORO-2025-01",
+      "suma_asegurada": 200000,
+      "edad": 30,
+      "zona": "CDMX",
+      "descuentos": ["buen_conductor"],
+      "recargos": [],
+      "opciones": {
+        "uso_comercial": false,
+        "blindado": false
+      }
+    }
+    ```
+- **Response (ejemplo JSON):**
+    ```json
+    {
+      "prima_total": 5175.0,
+      "detalles": [
+        {
+          "regla_id": "AUTO-PRIMA-2025-01",
+          "descripcion": "Cálculo de Prima Base – Autos Particular",
+          "subtotal": 5175.0
+        }
+      ],
+      "version_utilizada": "1",
+      "fecha_calculo": "2025-06-22T18:03:29Z",
+      "trazabilidad": {
+        "reglas_aplicadas": ["AUTO-PRIMA-2025-01"],
+        "parametros": {...}
+      }
+    }
+    ```
+
+---
+
+## 2. Consulta de productos y planes
+
+### Endpoint: `/api/v1/productos`
+
+- **Método:** GET
+- **Descripción:** Lista productos, planes y coberturas disponibles.
+
+---
+
+## 3. Consulta de reglas vigentes
+
+### Endpoint: `/api/v1/reglas/{entidad_id}`
+
+- **Método:** GET
+- **Descripción:** Devuelve las reglas configuradas para un producto/plan/cobertura.
+
+---
+
+## 4. Consulta del histórico de cotizaciones
+
+### Endpoint: `/api/v1/cotizaciones?usuario_id=...`
+
+- **Método:** GET
+- **Descripción:** Devuelve el histórico de cotizaciones hechas por usuario, canal o fecha.
+
+---
+
+## 5. Webhook de notificación
+
+### Endpoint: `/api/v1/webhook/cotizacion`
+
+- **Método:** POST
+- **Descripción:** Recibe notificaciones automáticas de nuevas cotizaciones, para integraciones externas.
+
+---
+
+## 6. Seguridad y autenticación
+
+- **Autenticación:** JWT, OAuth2 o API Key.
+- **Permisos:** Roles y scopes para limitar acceso a endpoints.
+
+---
+
+## 7. Notas
+
+- Todos los endpoints deben auditar el usuario y timestamp.
+- Respuestas deben ser JSON, con manejo claro de errores y validaciones.
+- La API debe estar documentada en OpenAPI/Swagger.
+
+---
+
+_Última actualización: 2025-06-22_
